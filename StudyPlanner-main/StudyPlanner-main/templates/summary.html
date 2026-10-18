@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block content %}<h3>{{ m.name }}</h3>
+{% if s %}<div class="cardx">{% if s_demo %}<span class="badge bg-warning text-dark">DEMO data</span>{% endif %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>{{ s.title }}</h4>
+  <div>
+    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('download_summary_pdf', mid=m.id) }}"><i class="bi bi-download"></i> Download as PDF</a>
+    <button class="btn btn-sm btn-primary" onclick="go(this,{{ m.id }},'summary')">{{ 'Regenerate' if s else 'Generate' }} summary</button>
+  </div>
+</div>
+
+<h5>Overview</h5><p>{{ s.overview }}</p>
+
+{% if s.sections %}{% for section in s.sections %}
+<h5 class="mt-4">{{ section.title }}</h5>
+<p>{{ section.content }}</p>
+{% endfor %}{% endif %}
+
+{% for h, k in [("Key Concepts","key_concepts"),("Main Points","main_points"),("Formulas","formulas"),("Examples","examples"),("Processes","processes"),("Comparisons","comparisons"),("Advantages","advantages"),("Disadvantages","disadvantages")] %}
+{% if s[k] %}<h5 class="mt-4">{{ h }}</h5><ul>{% for x in s[k] %}<li>{{ x }}</li>{% endfor %}</ul>{% endif %}{% endfor %}
+
+{% if s.definitions %}<h5 class="mt-4">Definitions</h5><ul>{% for d in s.definitions %}<li>{% if d is mapping %}<b>{{ d.term }}</b>: {{ d.meaning }}{% else %}{{ d }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+
+{% if s.revision_notes %}<div class="cardx mt-4" style="background:#f8f9fa;"><h5>Quick Revision</h5><ul>{% for x in s.revision_notes %}<li>{{ x }}</li>{% endfor %}</ul></div>{% endif %}
+
+</div>
+{% else %}<p class="text-muted">No summary yet.</p>
+<button class="btn btn-primary" onclick="go(this,{{ m.id }},'summary')">Generate summary</button>
+{% endif %}
+{% if quiz_id %}<a class="btn btn-success" href="{{ url_for('quiz', qid=quiz_id) }}">Take latest quiz</a>{% endif %}{% endblock %}
